@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  OneToMany,
 } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
 import { Status } from '../../statuses/entities/status.entity';
@@ -18,6 +19,7 @@ import bcrypt from 'bcryptjs';
 import { EntityHelper } from 'src/utils/entity-helper';
 import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
 import { Exclude, Expose } from 'class-transformer';
+import { TodoList } from 'src/todo-list/entities/todo-list.entity';
 
 @Entity()
 export class User extends EntityHelper {
@@ -82,6 +84,11 @@ export class User extends EntityHelper {
     eager: true,
   })
   status?: Status;
+
+  @OneToMany(() => TodoList, (todoList) => todoList.user.id, {
+    nullable: false,
+  })
+  todoLists: TodoList[];
 
   @Column({ type: String, nullable: true })
   @Index()
