@@ -47,9 +47,7 @@ export class TodoSeedService {
           updatedAt: new Date(),
           title: `Learn ${technology}`,
           completed: false,
-          todoList: {
-            id: 1,
-          },
+          todoListId: 1,
         }),
       );
       await this.repository.save(todos);

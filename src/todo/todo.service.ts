@@ -1,15 +1,11 @@
-import { PaginationService } from './../pagination/pagination.service';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { CreateTodoDto } from './dto/create-todo.dto';
-import { UpdateTodoDto } from './dto/update-todo.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Todo } from './entities/todo.entity';
+import { PaginationService } from './../pagination/pagination.service';
+import { CreateTodoDto } from './dto/create-todo.dto';
 import { FindAllTodoDto } from './dto/find-all-todo.dto';
+import { UpdateTodoDto } from './dto/update-todo.dto';
+import { Todo } from './entities/todo.entity';
 
 @Injectable()
 export class TodoService extends PaginationService {
@@ -31,14 +27,10 @@ export class TodoService extends PaginationService {
     return this.getPagination({
       repository: this.todoRepository,
       where: {
-        todoList: {
-          id: todoListId,
-        },
+        todoListId,
       },
       order: {
-        id: {
-          order: 'ASC',
-        },
+        createdAt: 'ASC',
       },
       page,
       limit,
@@ -49,14 +41,15 @@ export class TodoService extends PaginationService {
     const todo = await this.todoRepository.findOne({
       where: {
         id,
-        todoList: {
-          id: todoListId,
-        },
+        todoListId,
       },
     });
 
     if (!todo) {
-      throw new NotFoundException('Todo not found');
+      throw new HttpException(
+        `Cannot find todo with this id: ${id}`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     return todo;
@@ -66,28 +59,30 @@ export class TodoService extends PaginationService {
     const todo = await this.todoRepository.update(
       {
         id,
-        todoList: {
-          id: todoListId,
-        },
+        todoListId,
       },
       updateTodoDto,
     );
 
     if (!todo.affected) {
-      throw new BadRequestException();
+      throw new HttpException(
+        `Cannot update todo with this id: ${id}`,
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 
   async remove(todoListId: number, id: number) {
     const todo = await this.todoRepository.softDelete({
       id,
-      todoList: {
-        id: todoListId,
-      },
+      todoListId,
     });
 
     if (!todo.affected) {
-      throw new BadRequestException();
+      throw new HttpException(
+        `Cannot remove todo with this id: ${id}`,
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 }

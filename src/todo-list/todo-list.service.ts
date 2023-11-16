@@ -1,5 +1,6 @@
 import {
-  BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -26,18 +27,14 @@ export class TodoListService {
 
   findAll(userId: User['id']) {
     return this.todoListRepository.findBy({
-      user: {
-        id: userId,
-      },
+      userId,
     });
   }
 
-  async findOne(id: number, userId: User['id']) {
+  async findOne(id: TodoList['id'], userId: User['id']) {
     const todoList = await this.todoListRepository.findOneBy({
       id,
-      user: {
-        id: userId,
-      },
+      userId,
     });
 
     if (!todoList) {
@@ -48,35 +45,37 @@ export class TodoListService {
   }
 
   async update(
-    id: number,
+    id: TodoList['id'],
     updateTodoListDto: UpdateTodoListDto,
     userId: User['id'],
   ) {
     const todoList = await this.todoListRepository.update(
       {
         id,
-        user: {
-          id: userId,
-        },
+        userId,
       },
       updateTodoListDto,
     );
 
     if (!todoList.affected) {
-      throw new BadRequestException();
+      throw new HttpException(
+        `Cannot update todo list with this id: ${id}`,
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 
-  async remove(id: number, userId: User['id']) {
+  async remove(id: TodoList['id'], userId: User['id']) {
     const todoList = await this.todoListRepository.softDelete({
       id,
-      user: {
-        id: userId,
-      },
+      userId,
     });
 
     if (!todoList.affected) {
-      throw new BadRequestException();
+      throw new HttpException(
+        `Cannot remove todo list with this id: ${id}`,
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 }

@@ -85,7 +85,7 @@ export class User extends EntityHelper {
   })
   status?: Status;
 
-  @OneToMany(() => TodoList, (todoList) => todoList.user.id, {
+  @OneToMany(() => TodoList, (todoList) => todoList.userId, {
     nullable: false,
   })
   todoLists: TodoList[];

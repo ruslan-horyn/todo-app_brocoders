@@ -17,15 +17,11 @@ export class TodoListSeedService {
       await this.repository.save([
         this.repository.create({
           name: 'To Learn',
-          user: {
-            id: 1,
-          },
+          userId: 1,
         }),
         this.repository.create({
           name: 'Daily Tasks',
-          user: {
-            id: 2,
-          },
+          userId: 2,
         }),
       ]);
     }

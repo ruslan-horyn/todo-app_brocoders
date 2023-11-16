@@ -17,23 +17,32 @@ export class TodoList extends EntityHelper {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: String, nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   name: string;
 
-  @OneToMany(() => Todo, (todo) => todo.todoList)
+  @OneToMany(() => Todo, (todo) => todo.todoListId)
   todos: Todo[];
 
   @ManyToOne(() => User, (user) => user.todoLists, {
     nullable: false,
   })
-  user: User;
+  private user: User;
 
-  @CreateDateColumn()
+  @Column({ type: 'integer', nullable: false })
+  userId: number;
+
+  @CreateDateColumn({
+    name: 'createdat',
+  })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    name: 'updatedat',
+  })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({
+    name: 'deletedat',
+  })
   deletedAt: Date;
 }
