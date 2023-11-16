@@ -1,30 +1,21 @@
-import {
-  FindManyOptions,
-  ObjectLiteral,
-  Repository,
-  SelectQueryBuilder,
-} from 'typeorm';
+import { FilterEntityKeys } from 'src/utils/types/filter-entity-keys';
+import { PaginationOrderType } from 'src/utils/types/pagination';
+import { ObjectLiteral } from 'typeorm';
 import { BASE_LIMIT, DEFAULT_PAGE, MAX_LIMIT } from '../common/constants';
-
-export type PaginationOrderType<T extends Record<string, unknown>> = {
-  [P in keyof T as T[P] extends Record<string, unknown> ? never : P]?: {
-    order: 'ASC' | 'DESC';
-    nulls?: 'NULLS FIRST' | 'NULLS LAST';
-  };
-};
+import { PaginationArgs } from './pagination.type';
 
 export class PaginationService {
-  private setOrder<T extends ObjectLiteral>(
-    queryBuilder: SelectQueryBuilder<T>,
-    order: PaginationOrderType<T>,
+  private gerEntityOrder<T extends ObjectLiteral>(
+    order: PaginationOrderType<FilterEntityKeys<T>>,
   ) {
-    for (const orderKey in order) {
-      queryBuilder.addOrderBy(
-        orderKey,
-        order[orderKey]?.order,
-        order[orderKey]?.nulls,
-      );
+    const entityOrder = {} as Record<string, 'ASC' | 'DESC'>;
+    for (const name in order) {
+      const value = order[name];
+      if (value) {
+        entityOrder[name] = value;
+      }
     }
+    return entityOrder;
   }
 
   async getPagination<T extends ObjectLiteral>({
@@ -32,25 +23,18 @@ export class PaginationService {
     where = {},
     page = DEFAULT_PAGE,
     limit = BASE_LIMIT,
-    order = {} as PaginationOrderType<T>,
-  }: {
-    repository: Repository<T>;
-    where?: FindManyOptions<T>['where'];
-    page?: number;
-    limit?: number;
-    order?: PaginationOrderType<T>;
-  }) {
+    order = {} as PaginationOrderType<FilterEntityKeys<T>>,
+  }: PaginationArgs<T>) {
     const offset = (page - 1) * limit;
     const take = limit > MAX_LIMIT ? MAX_LIMIT : limit;
+    const orderBy = this.gerEntityOrder(order);
 
     const queryBuilder = repository
       .createQueryBuilder()
       .where(where)
       .skip(offset)
       .take(take)
-      .orderBy();
-
-    this.setOrder(queryBuilder, order);
+      .orderBy(orderBy);
 
     const [items, count] = await queryBuilder.getManyAndCount();
 

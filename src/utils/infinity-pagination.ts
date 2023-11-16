@@ -1,4 +1,4 @@
-import { IPaginationOptions } from './types/pagination-options';
+import { IPaginationOptions } from './types/pagination';
 import { InfinityPaginationResultType } from './types/infinity-pagination-result.type';
 
 export const infinityPagination = <T>(
