@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -16,6 +17,7 @@ import { RequestUser } from 'src/users/user.decorator';
 import { CreateTodoListDto } from './dto/create-todo-list.dto';
 import { UpdateTodoListDto } from './dto/update-todo-list.dto';
 import { TodoListService } from './todo-list.service';
+import { FindAllTodoListDto } from './dto/find-all-todo-list.dto';
 
 @ApiBearerAuth()
 @ApiTags('Todo-list')
@@ -36,8 +38,9 @@ export class TodoListController {
   }
 
   @Get()
-  findAll(@RequestUser() user: User) {
-    return this.todoListService.findAll(user.id);
+  findAll(@RequestUser() user: User, @Query() query: FindAllTodoListDto) {
+    const { page, limit } = query;
+    return this.todoListService.findAll(user.id, page, limit);
   }
 
   @Get(':id')

@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PaginationService } from 'src/pagination/pagination.service';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateTodoListDto } from './dto/create-todo-list.dto';
@@ -12,11 +13,13 @@ import { UpdateTodoListDto } from './dto/update-todo-list.dto';
 import { TodoList } from './entities/todo-list.entity';
 
 @Injectable()
-export class TodoListService {
+export class TodoListService extends PaginationService {
   constructor(
     @InjectRepository(TodoList)
     private todoListRepository: Repository<TodoList>,
-  ) {}
+  ) {
+    super();
+  }
 
   create(createTodoListDto: CreateTodoListDto, userId: User['id']) {
     return this.todoListRepository.save({
@@ -25,9 +28,17 @@ export class TodoListService {
     });
   }
 
-  findAll(userId: User['id']) {
-    return this.todoListRepository.findBy({
-      userId,
+  findAll(userId: User['id'], page: number, limit: number) {
+    return this.getPagination({
+      repository: this.todoListRepository,
+      where: {
+        userId,
+      },
+      order: {
+        createdAt: 'ASC',
+      },
+      page,
+      limit,
     });
   }
 

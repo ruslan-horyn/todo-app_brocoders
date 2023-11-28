@@ -19,7 +19,9 @@ export class TodoService extends PaginationService {
   create(todoListId: number, createTodoDto: CreateTodoDto) {
     return this.todoRepository.save({
       ...createTodoDto,
-      todoListId,
+      todoList: {
+        id: todoListId,
+      },
     });
   }
 
@@ -27,7 +29,9 @@ export class TodoService extends PaginationService {
     return this.getPagination({
       repository: this.todoRepository,
       where: {
-        todoListId,
+        todoList: {
+          id: todoListId,
+        },
       },
       order: {
         createdAt: 'ASC',
@@ -41,7 +45,9 @@ export class TodoService extends PaginationService {
     const todo = await this.todoRepository.findOne({
       where: {
         id,
-        todoListId,
+        todoList: {
+          id: todoListId,
+        },
       },
     });
 
@@ -59,7 +65,9 @@ export class TodoService extends PaginationService {
     const todo = await this.todoRepository.update(
       {
         id,
-        todoListId,
+        todoList: {
+          id: todoListId,
+        },
       },
       updateTodoDto,
     );
@@ -75,7 +83,9 @@ export class TodoService extends PaginationService {
   async remove(todoListId: number, id: number) {
     const todo = await this.todoRepository.softDelete({
       id,
-      todoListId,
+      todoList: {
+        id: todoListId,
+      },
     });
 
     if (!todo.affected) {

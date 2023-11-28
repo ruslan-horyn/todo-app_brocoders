@@ -3,14 +3,7 @@ import { Transform } from 'class-transformer';
 import { IsNumber, IsOptional } from 'class-validator';
 import { BASE_LIMIT, DEFAULT_PAGE } from 'src/common/constants';
 
-export class FindAllTodoDto {
-  @ApiProperty({
-    example: 1,
-  })
-  @Transform(({ value }) => Number(value))
-  @IsNumber({ allowNaN: false, allowInfinity: false })
-  todoListId: number;
-
+export class FindAllTodoListDto {
   @ApiProperty({
     example: 1,
     required: false,

@@ -22,10 +22,7 @@ export class Todo extends EntityHelper {
   completed: boolean;
 
   @ManyToOne(() => TodoList, (todoList) => todoList.todos)
-  private todoList: TodoList;
-
-  @Column({ type: 'integer', nullable: false })
-  todoListId: number;
+  todoList: TodoList;
 
   @CreateDateColumn({
     name: 'createdat',

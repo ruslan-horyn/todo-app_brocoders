@@ -20,7 +20,7 @@ export class TodoList extends EntityHelper {
   @Column({ type: 'varchar', nullable: false })
   name: string;
 
-  @OneToMany(() => Todo, (todo) => todo.todoListId)
+  @OneToMany(() => Todo, (todo) => todo.todoList)
   todos: Todo[];
 
   @ManyToOne(() => User, (user) => user.todoLists, {

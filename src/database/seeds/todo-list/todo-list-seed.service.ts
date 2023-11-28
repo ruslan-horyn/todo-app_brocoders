@@ -3,6 +3,30 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+const todoLists = [
+  'Learn',
+  'Daily Tasks',
+  'Work',
+  'Personal',
+  'Shopping',
+  'Travel',
+  'Health',
+  'Family',
+  'Friends',
+  'Movies',
+  'Music',
+  'Books',
+  'Sports',
+  'Food',
+  'Games',
+  'Religion',
+  'Politics',
+  'Science',
+  'Technology',
+  'Art',
+  'History',
+  'Other',
+];
 @Injectable()
 export class TodoListSeedService {
   constructor(
@@ -14,16 +38,14 @@ export class TodoListSeedService {
     const count = await this.repository.count();
 
     if (!count) {
-      await this.repository.save([
-        this.repository.create({
-          name: 'To Learn',
-          userId: 1,
-        }),
-        this.repository.create({
-          name: 'Daily Tasks',
-          userId: 2,
-        }),
-      ]);
+      await this.repository.save(
+        todoLists.map((name) =>
+          this.repository.create({
+            name,
+            userId: 1,
+          }),
+        ),
+      );
     }
   }
 }
